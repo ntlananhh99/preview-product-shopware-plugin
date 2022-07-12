@@ -1,0 +1,42 @@
+{
+    "name": "wns/ar-shopware",
+    "description": "This plugin will allow users to preview the product with their background.",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "version": "1.0.0",
+    "autoload": {
+        "psr-4": {
+            "Wns\\WnsArShopware\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "web'n'sale GmbH"
+        }
+    ],
+    "require": {
+        "shopware/core": "^6.4.0",
+        "shopware/storefront": "^6.4.0"
+    },
+    "extra": {
+        "shopware-plugin-class": "Wns\\WnsArShopware\\WnsArShopware",
+        "label": {
+            "de-DE": "AR-Shopware-Erweiterung",
+            "en-GB": "AR Shopware Plugin"
+        },
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by web'n'sale GmbH",
+        "description": {
+            "de-DE": "Mit diesem Plugin können Benutzer eine Vorschau des Produkts mit ihrem Hintergrund anzeigen.",
+            "en-GB": "This plugin will allow users to preview the product with their background."
+        },
+        "manufacturerLink": {
+            "de-DE": "https://webnsale.com/",
+            "en-GB": "https://webnsale.com/"
+        },
+        "supportLink": {
+            "de-DE": "https://webnsale.com/",
+            "en-GB": "https://webnsale.com/"
+        }
+    }
+}

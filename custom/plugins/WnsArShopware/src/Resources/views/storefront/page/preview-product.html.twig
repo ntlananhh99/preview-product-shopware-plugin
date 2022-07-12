@@ -1,0 +1,24 @@
+{% block test_from %}
+    {{ dump() }}
+    <table border="1">
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Media ID
+            </th>
+        </tr>
+        {% for background in backgrounds %}
+            <tr>
+                <td>
+                    {{ background.id }}
+                </td>
+                <td>
+                    {{ background.mediaId }}
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}
