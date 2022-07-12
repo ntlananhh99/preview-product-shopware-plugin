@@ -1,0 +1,22 @@
+{% block test_from %}
+    <h2>Update Background Config</h2>
+    <form
+        action="{{ path('frontend.product.preview.handle.update') }}"
+        method="post"
+        enctype="multipart/form-data"
+        data-form-csrf-handler="true"
+        data-form-validation="true">
+        {% block test_upload_form_csrf %}
+            {{ sw_csrf('frontend.product.preview.handle.update') }}
+        {% endblock %}
+        <label for="upload-file">File Upload</label>
+        <input type="file" id="upload-file" name="upload_file"  />
+        <br>
+        <label for="width">Width</label>
+        <input type="number" id="width" name="width"  />
+        <br>
+        <button type="submit" class="btn btn-primary">
+            UPLOAD
+        </button>
+    </form>
+{% endblock %}

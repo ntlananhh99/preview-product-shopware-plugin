@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>Settings</title>
+        <title lang="de-DE">Einstellungen</title>
+
+        <input-field type="int">
+            <name>maxSize</name>
+            <label>Maximum image upload size (default 2MB).</label>
+            <label lang="de-DE">Maximale Bild-Upload-Größe (Standard 2 MB).</label>
+            <defaultValue>2</defaultValue>
+            <min>1</min>
+        </input-field>
+
+        <input-field type="int">
+            <name>maxDayStore</name>
+            <label>Maximum number of days to store user-uploaded images.</label>
+            <label lang="de-DE">Maximale Anzahl von Tagen zum Speichern von vom Benutzer hochgeladenen Bildern.</label>
+            <min>0</min>
+        </input-field>
+
+        <input-field type="int">
+            <name>limitBgDisplay</name>
+            <label>Number of backgrounds displayed in the storefront (default 5 images). </label>
+            <label lang="de-DE">Anzahl der im Schaufenster angezeigten Hintergründe (Standard 5 Bilder). </label>
+            <defaultValue>5</defaultValue>
+            <min>1</min>
+        </input-field>
+    </card>
+</config>

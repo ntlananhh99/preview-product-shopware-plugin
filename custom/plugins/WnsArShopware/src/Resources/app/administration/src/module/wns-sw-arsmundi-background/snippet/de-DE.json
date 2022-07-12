@@ -1,0 +1,57 @@
+{
+    "wns-arsmundi": {
+        "general": {
+            "title": "Ars Mundi",
+            "descriptionText" : "Ars Mundi Plugin",
+
+
+            "detailTitle" : "ArsMundi Edit Page",
+            "createTitle" : "ArsMundi Create Background Image Page"
+        },
+        "list" : {
+            "columnName" : {
+                "fileName" : "File Name",
+                "fileSize" : "File Size(kb)",
+                "active" : "Background Active"
+            }
+
+        },
+        "button" : {
+            "addButtonText" : "Create",
+            "cancelButtonText": "Cancel",
+            "saveButtonText" : "Save"
+        },
+        "fieldsets" : {
+            "general" : "Background"
+        },
+        "elements" : {
+            "bgWidth" : "Background image's width (cm)",
+            "active" : "Active",
+            "dpTop" :  "Position top of product (%)",
+            "dpLeft" : "Position left of product (%)",
+            "media" : "Background image",
+            "salesChannel" : "Sales Channel"
+        },
+        "placeholder": {
+            "search" : "Search background by name or file size",
+            "bgWidth" : "Background image's width",
+            "dpTop" :  "Position top of product",
+            "dpLeft" : "Position left of product"
+
+        },
+        "help" : {
+            "bgWidth" : "Set  width of background image to display in storefront",
+            "dpTop" :  "Initial top position  of product on background image",
+            "dpLeft" : "Initial left position of product on background image",
+            "salesChannel" : "Add Sales Channels in which this background image should be displayed"
+        },
+        "fieldsets" : {
+            "media" : "Media",
+            "general" : "Background"
+        },
+        "notification" : {
+            "required" : "Background image is required",
+            "errorSave": "Can not save background"
+        }
+    }
+}
