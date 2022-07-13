@@ -33,6 +33,7 @@ export default class ProductPreviewPlugin extends Plugin {
     init() {
         this.backgroundDropdownMenu = DomAccess.querySelector(this.el, '.wns-background-dropdown-menu');
         this.productReviewBackground = DomAccess.querySelector(this.el, '.wns-product-preview-background');
+        this.backgroundListDropdown = DomAccess.querySelector(this.el, '.wns-background-dropdown-background-list');
         this.draggedImage = DomAccess.querySelector(this.el, '.wns-product-preview-dragged-image');
         this.copyLinkButton = DomAccess.querySelector(this.el, '.wns-copy-btn');
         this.shareLinkDropdown= DomAccess.querySelector(this.el, '.wns-preview-tool-action-share-link')
@@ -45,6 +46,8 @@ export default class ProductPreviewPlugin extends Plugin {
         this.setWidthOfProductImage();
         this.setPositionOfProductImage();
         this.registerEvents();
+
+        document.$emitter.subscribe('WnsArShopware/onOwnBackgroundImageChanged', this._onOwnBackgroundImageChanged.bind(this));
     }
 
     registerEvents() {
@@ -71,6 +74,39 @@ export default class ProductPreviewPlugin extends Plugin {
         );
     }
 
+    _onOwnBackgroundImageChanged(data) {
+        const background = data.detail.background;
+        const method = data.detail.method;
+        if (background) {
+            this.selectedBackground = background;
+            this.setBackgroundImage(this.selectedBackground.media.url)
+
+            if (method == 'upload') {
+                const linkTag = document.createElement('a');
+                const divHoverZoom = document.createElement("div");
+                const imgTag = document.createElement("img");
+
+                linkTag.setAttribute('href', '#');
+                linkTag.setAttribute('class', 'wns-background-dropdown-item');
+                linkTag.setAttribute('data-background-id', background.id);
+                divHoverZoom.setAttribute('class', 'img-hover-zoom');
+                imgTag.setAttribute('src', background.media.url);
+                imgTag.setAttribute('alt', background.media.alt);
+                imgTag.setAttribute('class', 'dropdown-item');
+
+                divHoverZoom.appendChild(imgTag);
+                linkTag.appendChild(divHoverZoom);
+
+                const ownBackgroundDropdownItem = this.backgroundListDropdown.querySelector('[data-background-id=' + background.id + ']');
+
+                if (ownBackgroundDropdownItem) {
+                    ownBackgroundDropdownItem.remove();
+                }
+
+                this.backgroundListDropdown.prepend(linkTag);
+            }
+        }
+    }
 
     onHandleChangeBackground(event) {
         event.preventDefault();
@@ -78,7 +114,7 @@ export default class ProductPreviewPlugin extends Plugin {
 
         // get data background id
         const dataBackgroundId = dropdownItemSelected.getAttribute('data-background-id');
-        this.options.queryParams.backgroundimg_id= dataBackgroundId
+        this.options.queryParams.backgroundimg_id = dataBackgroundId;
         this.selectedBackground = this.options.backgroundImageList.find((item) => item.id === dataBackgroundId);
 
         this.setBackgroundImage(this.selectedBackground.media.url)
