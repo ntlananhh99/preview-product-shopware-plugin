@@ -1,24 +1,154 @@
-{% block test_from %}
-    {{ dump() }}
-    <table border="1">
-        <tr>
-            <th>
-                ID
-            </th>
-            <th>
-                Media ID
-            </th>
-        </tr>
-        {% for background in backgrounds %}
-            <tr>
-                <td>
-                    {{ background.id }}
-                </td>
-                <td>
-                    {{ background.mediaId }}
-                </td>
-            </tr>
-        {% endfor %}
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
 
-    </table>
+
+{% set backgroundImageList = [] %}
+
+{% for backgroundImage in page.imageBackgroundData.entities.elements %}
+    {% set backgroundImageList = backgroundImageList|merge([
+        {
+            id: backgroundImage.id,
+            bgUploadKey: backgroundImage.uploadKey,
+            mediaId: backgroundImage.mediaId,
+            bgWidth: backgroundImage.bgWidth,
+            topImgPosition: backgroundImage.topImgPosition,
+            leftImgPosition: backgroundImage.leftImgPosition,
+            media: backgroundImage.media ? { url: backgroundImage.media.url, alt: backgroundImage. backgroundImage.media.alt } : null
+        }
+    ]) %}
+{% endfor %}
+
+
+{% set route = {
+    iframe: {
+        path: url('frontend.product.preview', queryParams)
+    }
+} %}
+
+{% set ProductPreviewOptions = {
+     backgroundImageList: backgroundImageList,
+     selectedBackground: backgroundImageList[0],
+     queryParams: queryParams,
+     route: route,
+     shareEmail: {
+         subject: page.emailShareTemplate.subject,
+         contentPlain: page.emailShareTemplate.contentPlain,
+         productUrl: seoUrl('frontend.detail.page', {'productId': queryParams.product_id})
+     }
+ }
+%}
+
+
+{% set emailShareTemplate = '' %}
+
+
+{% block base_body %}
+    <body>
+    {% block wns_product_preview %}
+        <div
+            data-product-preview-plugin="true"
+            data-product-preview-plugin-options='{{ ProductPreviewOptions|json_encode }}'
+        >
+            <div class="wns-product-preview-container">
+                <div class="wns-product-preview-background"
+                     style="background-image: url('{{ProductPreviewOptions.selectedBackground.media.url}}')"
+                >
+                </div>
+
+                {% block wns_product_preview_product_image %}
+                    <div class="wns-product-preview-product-image-container">
+                        <div class="wns-product-preview-product-image">
+                            <div class="wns-product-preview-dragged-image">
+                                <img
+                                    class=""
+                                    src="{{ queryParams.productimg_url }}"
+                                    draggable="true"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                {% endblock %}
+
+                {% block wns_preview_tool_action_sidebar %}
+                    <div class="wns-product-preview-action-sidebar">
+                        <div class="wns-product-preview-action-button-group">
+                            {% block wns_preview_tool_action_select_background %}
+                                <div class="wns-product-preview-action-select-background btn-group dropright">
+                                    <div class="wns-product-preview-action-select-background btn-group dropright ">
+                                        <button type="button" class="btn btn-secondary wns-button-action-select-background dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Background
+                                        </button>
+                                        <div class="wns-background-dropdown-menu dropdown-menu ml-2">
+                                            {% for backgroundImage in backgroundImageList %}
+                                                {% block wns_product_preview_background_list_dropdown %}
+                                                        <a class="wns-background-dropdown-item" href="#"
+                                                        data-background-id="{{ backgroundImage.id }}">
+                                                            <div class="img-hover-zoom">
+                                                                <img src="{{ backgroundImage.media.url}}" class="dropdown-item" alt="">
+                                                            </div>
+                                                        </a>
+                                                {% endblock %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endblock %}
+
+                            {% block wns_preview_tool_action_upload_background %}
+                                <div class="wns-preview-tool-action-upload-background">
+                                    {% block wns_preview_tool_action_upload_background_button %}
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Upload
+                                                <span class="d-block d-sm-inline">
+                                                    {% sw_icon 'circle-upload'%}
+                                                </span>
+                                            </button>
+                                        </div>
+                                    {% endblock %}
+                                </div>
+                            {% endblock %}         
+
+                            {% block wns_preview_tool_action_share_product_preview %}
+                                <div class="wns-product-preview-action-share-product-preview btn-group">
+                                    <button class="btn btn-secondary dropdown-toggle wns-share-product-preview-button" type="button" id="share-product-preview-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Share
+                                    </button>
+                                    <div class="dropdown-menu wns-preview-tool-action-share-link mt-2 p-3">
+                                        {% block wns_preview_tool_action_share_link %}
+                                                <div class="form-group mb-0">
+                                                    <div class="input-group wns-preview-tool-share-link-input-group">
+                                                        <input type="text"
+                                                            class="form-control wns-preview-tool-share-link-input text-truncate"
+                                                            value={{ url('frontend.product.preview', ProductPreviewOptions.queryParams) }}
+                                                            disabled
+                                                        >
+                                                        <button class="wns-copy-btn">
+                                                            <span class="wns-copy-icon" >
+                                                                {% sw_icon 'products' style { 'color': '#777b6' } %}
+                                                            </span>
+                                                            <span class="tooltiptext" >Copy to clipboard</span>
+
+                                                        </button>
+                                                        
+                                                    </div>
+                                                    <a class="btn btn-primary wns-preview-tool-send-mail-button mt-2" href="mailto:?{{emailShareTemplate ~ 'subject=' ~ page.emailShareTemplate.subject|url_encode ~ '&body=' ~ page.encodeUrlEmailShareTemplate|url_encode }}">
+                                                        <button class="btn btn-primary ">Send mail</button>
+                                                    </a>
+                                        {% endblock %}
+                                    </div>
+                            </div>
+                        {% endblock %}
+
+                        </div>
+                    </div>
+                {% endblock %}
+
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block base_body_script %}
+        {{ parent() }}
+    {% endblock %}
+    </body>
 {% endblock %}
