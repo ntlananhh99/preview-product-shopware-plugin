@@ -25,5 +25,10 @@ class WnsArShopware extends Plugin
         $connection = $this->container->get(Connection::class);
         $connection->executeStatement('DROP TABLE IF EXISTS `' . ImageBackgroundUploadSalesChannelDefinition::ENTITY_NAME . '`');
         $connection->executeStatement('DROP TABLE IF EXISTS `' . ImageBackgroundUploadDefinition::ENTITY_NAME . '`');
+
+        $folderName = ucwords(str_replace("_", " ", ImageBackgroundUploadDefinition::ENTITY_NAME));
+        $connection->executeStatement('DELETE FROM `' . MediaDefaultFolderDefinition::ENTITY_NAME . '` WHERE entity LIKE "' . ImageBackgroundUploadDefinition::ENTITY_NAME . '"');
+        $connection->executeStatement('DELETE FROM `' . MediaFolderDefinition::ENTITY_NAME . '` WHERE name LIKE "'. $folderName .'"');
+
     }
 }
