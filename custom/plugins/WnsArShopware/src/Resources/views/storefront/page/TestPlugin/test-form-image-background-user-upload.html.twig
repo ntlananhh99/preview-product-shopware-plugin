@@ -1,0 +1,28 @@
+{% block test_from %}
+    <h1>Show form in order to user upload image background</h1>
+    <form
+        action="{{ path('frontend.product.preview.handle.upload') }}"
+        method="post"
+        enctype="multipart/form-data"
+        data-form-csrf-handler="true"
+        data-form-validation="true">
+        {% block test_upload_form_csrf %}
+            {{ sw_csrf('frontend.product.preview.handle.upload') }}
+        {% endblock %}
+        <label for="upload-file">File Upload</label>
+        <input type="file" id="upload-file" name="upload_file" />
+        <br>
+        <label for="width">Width</label>
+        <input type="number" id="width" name="width"  />
+        <br>
+        <label for="top">Top</label>
+        <input type="number" id="top" name="top"  />
+        <br>
+        <label for="left">Left</label>
+        <input type="number" id="left" name="left"  />
+        <br>
+        <button type="submit" class="btn btn-primary">
+            UPLOAD
+        </button>
+    </form>
+{% endblock %}
