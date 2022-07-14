@@ -12,15 +12,8 @@ class ImageBackgroundUploadDemoDataCommand extends Command
 {
     protected static $defaultName = 'wns:image-background-upload:demo-data';
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $imgBgUploadRepository;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $imgBgUploadSalesChannelRepository;
+    protected EntityRepositoryInterface $imgBgUploadRepository;
+    private EntityRepositoryInterface $imgBgUploadSalesChannelRepository;
 
     public function __construct(
         EntityRepositoryInterface $imgBgUploadRepository,
@@ -76,7 +69,7 @@ class ImageBackgroundUploadDemoDataCommand extends Command
             'bgWidth' => rand(20,30),
             'leftImgPosition' => rand(10,50),
             'topImgPosition' => rand(10,50),
-            'mediaId' => Uuid::randomHex(),
+            'mediaId' => '9EE96B0D13E943B8833572B04604E41D',
             'active' => $active
         ];
     }

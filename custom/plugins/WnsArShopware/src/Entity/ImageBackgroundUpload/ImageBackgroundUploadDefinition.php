@@ -47,7 +47,7 @@ class ImageBackgroundUploadDefinition extends EntityDefinition
             (new IntField('top_img_position', 'topImgPosition'))->addFlags(new Required()),
             (new FkField('media_id', 'mediaId', MediaDefinition::class))->addFlags(new Required()),
             new BoolField('active', 'active'),
-            (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, true)),
+            (new OneToOneAssociationField('media', 'media_id', 'id', MediaDefinition::class, false)),
             (new OneToManyAssociationField('imgBgUploadSalesChannels', ImageBackgroundUploadSalesChannelDefinition::class, 'image_background_upload_id', 'id')),
             new CreatedAtField(),
             new UpdatedAtField()
