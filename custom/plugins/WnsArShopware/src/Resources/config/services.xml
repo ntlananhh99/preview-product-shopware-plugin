@@ -28,5 +28,18 @@
             <argument type="service" id="media.repository" />
             <tag name="console.command" />
         </service>
+
+        <service id="Wns\WnsArShopware\Storefront\Controller\ImageBackgroundController" public="true">
+            <argument type="service" id="media_folder.repository" />
+            <argument type="service" id="media.repository" />
+            <argument type="service" id="wns_image_background_upload.repository" />
+            <argument type="service" id="wns_image_background_upload_sales_channel.repository" />
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver" />
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileNameProvider" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
     </services>
 </container>
