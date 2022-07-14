@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Wns\WnsArShopware\Storefront\Page\ImageBackground\ImageBackgroundPageLoader;
 
 /**
  * @RouteScope(scopes={"storefront"})
@@ -41,6 +42,7 @@ class ImageBackgroundController extends StorefrontController
     private FileSaver $mediaUpdater;
     private FileNameProvider $fileNameProvider;
     private SystemConfigService $systemConfigService;
+    private ImageBackgroundPageLoader $backgroundPageLoader;
 
     /**
      * @param EntityRepositoryInterface $mediaFolderRepository
@@ -50,6 +52,7 @@ class ImageBackgroundController extends StorefrontController
      * @param FileSaver $mediaUpdater
      * @param FileNameProvider $fileNameProvider
      * @param SystemConfigService $systemConfigService
+     * @param ImageBackgroundPageLoader $backgroundPageLoader
      */
     public function __construct(
         EntityRepositoryInterface $mediaFolderRepository,
@@ -58,7 +61,8 @@ class ImageBackgroundController extends StorefrontController
         EntityRepositoryInterface $imgBgUploadSalesChannelRepository,
         FileSaver $mediaUpdater,
         FileNameProvider $fileNameProvider,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        ImageBackgroundPageLoader $backgroundPageLoader
     ){
         $this->mediaFolderRepository = $mediaFolderRepository;
         $this->mediaRepository = $mediaRepository;
@@ -67,6 +71,7 @@ class ImageBackgroundController extends StorefrontController
         $this->mediaUpdater = $mediaUpdater;
         $this->fileNameProvider = $fileNameProvider;
         $this->systemConfigService = $systemConfigService;
+        $this->backgroundPageLoader = $backgroundPageLoader;
     }
 
     /**
@@ -77,7 +82,13 @@ class ImageBackgroundController extends StorefrontController
      */
     public function showImageBackgroundList(Request $request, SalesChannelContext $salesChannelContext) : Response
     {
-        dd('Show background list');
+        $dataRequest = $request->query->all();
+        $page = $this->backgroundPageLoader->load($request, $salesChannelContext);
+
+        return $this->renderStorefront('@WnsArShopware/storefront/page/preview-product.html.twig', [
+            'queryParams' => $dataRequest,
+            'page' => $page
+        ]);
     }
 
     /**
