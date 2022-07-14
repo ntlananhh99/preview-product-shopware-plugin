@@ -47,5 +47,9 @@
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader" />
             <argument type="service" id="wns_image_background_upload.repository" />
         </service>
+
+        <service id="Wns\WnsArShopware\Subscriber\CustomCoreSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>
