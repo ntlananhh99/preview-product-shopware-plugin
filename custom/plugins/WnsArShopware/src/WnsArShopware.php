@@ -23,11 +23,7 @@ class WnsArShopware extends Plugin
             return;
         }
         $connection = $this->container->get(Connection::class);
-        $folderName = str_replace("_", " ", ImageBackgroundUploadDefinition::ENTITY_NAME);
         $connection->executeStatement('DROP TABLE IF EXISTS `' . ImageBackgroundUploadSalesChannelDefinition::ENTITY_NAME . '`');
         $connection->executeStatement('DROP TABLE IF EXISTS `' . ImageBackgroundUploadDefinition::ENTITY_NAME . '`');
-        $connection->executeStatement('DELETE FROM `' . MediaFolderDefinition::ENTITY_NAME . '` WHERE name LIKE "'. $folderName .'"');
-        $connection->executeStatement('DELETE FROM `' . MediaDefaultFolderDefinition::ENTITY_NAME . '` WHERE entity LIKE "' . ImageBackgroundUploadDefinition::ENTITY_NAME . '"');
-        $connection->executeStatement('DELETE FROM `' . MediaFolderDefinition::ENTITY_NAME . '` WHERE name LIKE "Wns Background User"');
     }
 }

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Test Plugin</title>
+</head>
+<body>
+
+<div id="content">
+    <h1>Test Plugin Product Preview</h1>
+    {% block content %}
+        {% set defaultNull = 'No image backgrounds in database' %}
+        {% if backgrounds|length > 0 %}
+            {{ dump(backgrounds) }}
+        {% else %}
+            {{ defaultNull }}
+            <br>
+            <a class="test-insert" href="http://localhost:8000/test/plugin/product/preview/insert"> INSERT DATA DEFAULT</a>
+        {% endif %}
+    {% endblock %}
+</div>
+
+<div id="footer">
+    {% block footer %}
+        &copy; Copyright 2022 by <a href="#">WebnSale</a>.
+    {% endblock %}
+</div>
+</body>
+</html>
