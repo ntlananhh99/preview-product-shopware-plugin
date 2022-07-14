@@ -37,9 +37,15 @@
             <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver" />
             <argument type="service" id="Shopware\Core\Content\Media\File\FileNameProvider" />
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Wns\WnsArShopware\Storefront\Page\ImageBackground\ImageBackgroundPageLoader" />
             <call method="setContainer">
                 <argument type="service" id="service_container" />
             </call>
+        </service>
+
+        <service id="Wns\WnsArShopware\Storefront\Page\ImageBackground\ImageBackgroundPageLoader" public="true">
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader" />
+            <argument type="service" id="wns_image_background_upload.repository" />
         </service>
     </services>
 </container>

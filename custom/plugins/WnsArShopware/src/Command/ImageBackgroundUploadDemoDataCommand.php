@@ -63,13 +63,13 @@ class ImageBackgroundUploadDemoDataCommand extends Command
      */
     private function prepareDataImgBgUpload($id, $key): array
     {
-        $active = false;
-        if ( $key % 2 == 0)
-            $active = true;
+        $active = true;
+        if ( $key%3 == 0)
+            $active = false;
 
         return [
             'id' => $id,
-            'bgUploadKey' => 'Background '.$key,
+            'bgUploadKey' => null,
             'bgWidth' => rand(20,30),
             'leftImgPosition' => rand(10,50),
             'topImgPosition' => rand(10,50),
