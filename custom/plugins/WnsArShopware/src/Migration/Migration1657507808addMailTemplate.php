@@ -125,7 +125,7 @@ class Migration1657507808addMailTemplate extends MigrationStep
                 'mail_template_id' => Uuid::fromHexToBytes($mailTemplateId),
                 'language_id' => $defaultLangId,
                 'sender_name' => '{{ salesChannel.name }}',
-                'subject' => 'My artwork recommendation at ars mundi',
+                'subject' => 'My artwork recommendation at around shopware',
                 'content_html' => $this->getContentHtmlEn(),
                 'content_plain' => $this->getContentPlainEn(),
                 'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
@@ -165,8 +165,6 @@ class Migration1657507808addMailTemplate extends MigrationStep
                 <p>I like this artwork from AR Shopware Tool very much.</p>
                 <p>Below you will find the link for the preview:</p>
 
-                <span><strong>Product link:</strong>{{ seoUrl('frontend.detail.page', {'productId': queryParams.product_id}) }}<span>
-                <span><strong>Iframe link:</strong>{ url('frontend.product.preview', queryParams) }}<span>
             </div>
         MAIL;
     }
@@ -179,10 +177,6 @@ class Migration1657507808addMailTemplate extends MigrationStep
             I like this artwork from AR Shopware Tool very much.
 
             Below you will find the link for the preview:
-
-            Product link: {{ seoUrl('frontend.detail.page', {'productId': queryParams.product_id}) }}
-
-            Iframe link: {{ url('frontend.product.preview', queryParams) }}
         MAIL;
     }
 
@@ -193,9 +187,6 @@ class Migration1657507808addMailTemplate extends MigrationStep
                 <p>Hallo</p>
                 <p>Dieses Artwork aus dem Shopware Tool gefällt mir sehr gut.</p>
                 <p>Hier der Link zur Vorschau:</p>
-
-                <span><strong>Produktlink:</strong>{{ seoUrl('frontend.detail.page', {'productId': queryParams.product_id}) }}<span>
-                <span><strong>Iframe-Link:</strong>{ url('frontend.product.preview', queryParams) }}<span>
             </div>
         MAIL;
     }
@@ -208,10 +199,6 @@ class Migration1657507808addMailTemplate extends MigrationStep
             Dieses Artwork aus dem Shopware Tool gefällt mir sehr gut.
 
             Hier der Link zur Vorschau:
-
-            Produktlink: {{ seoUrl('frontend.detail.page', {'productId': queryParams.product_id}) }}
-
-            Iframe-Link: {{ url('frontend.product.preview', queryParams) }}
         MAIL;
     }
 }

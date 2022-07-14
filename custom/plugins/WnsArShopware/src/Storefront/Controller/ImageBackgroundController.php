@@ -87,7 +87,7 @@ class ImageBackgroundController extends StorefrontController
 
         $page = $this->backgroundPageLoader->load($request, $salesChannelContext);
 
-        return $this->renderStorefront('@WnsArShopware/storefront/page/preview-product.html.twig', [
+        return $this->renderStorefront('@WnsArShopware/storefront/page/test-preview-product.html.twig', [
             'queryParams' => $dataRequest,
             'page' => $page
         ]);
@@ -103,7 +103,7 @@ class ImageBackgroundController extends StorefrontController
     }
 
     /**
-     * @Route("/product/preview/handle/upload", name="frontend.product.preview.handle.upload", defaults={"csrf_protected"=false})
+     * @Route("/product/preview/handle/upload", name="frontend.product.preview.handle.upload", methods={"POST"}, defaults={"XmlHttpRequest"=true})
      * @param Request $request
      * @param SalesChannelContext $salesChannelContext
      * @return JsonResponse
@@ -114,6 +114,7 @@ class ImageBackgroundController extends StorefrontController
         $backgroundSaleChannel = $this->findImgBgUserUploadBySalesChannel($salesChannelContext);
         if($backgroundSaleChannel != null) {
             $payload['key'] = $backgroundSaleChannel->imageBackgroundUpload->getBgUploadKey();
+            $payload['mediaId'] = $backgroundSaleChannel->imageBackgroundUpload->getMediaId();
         }
 
         $context = $salesChannelContext->getContext();
@@ -122,7 +123,7 @@ class ImageBackgroundController extends StorefrontController
         $dataFile = $request->files;
         $fileName = null;
         $file = null;
-        $mediaId = null;
+        $mediaId = empty($payload['mediaId']) ? null : $payload['mediaId'];
         foreach ($dataFile as $file) {
             $error = $this->validateFileUpload($file);
             if(count($error) > 0) {
@@ -130,28 +131,30 @@ class ImageBackgroundController extends StorefrontController
             }
 
             $fileName = $file->getClientOriginalName();
-            $fileName = ImageBackgroundController . phpRandom::getInteger(100, 1000) . $fileName;
+            $fileName = Random::getInteger(100, 1000) . time() . $fileName;
 
-            $existMedia = $this->findMediaByFileName($fileName, $salesChannelContext);
-            if($existMedia === null) {
+            if($mediaId === null) {
                 $mediaId = Uuid::randomHex();
                 $this->addMediaAction($mediaId, 'Background' . time(), $fileName, $file->getClientMimeType(), $file->guessExtension(), $folderId);
-            } else {
-                $mediaId = $existMedia->getId();
             }
         }
 
-        $dataCreate = $this->getImgBgData($payload, $mediaId, $salesChannelContext);
+        $dataCreate = $this->getImgBgData($payload, $mediaId, $dataFile, $salesChannelContext);
         $this->imgBgUploadRepository->upsert([$dataCreate['imgBgData']], $context);
         if ($dataCreate['imgBgUploadSalesChannelData']) {
             $this->imgBgUploadSalesChannelRepository->create($dataCreate['imgBgUploadSalesChannelData'], $context);
         }
 
         try {
-            $this->uploadImage($file, $fileName, $mediaId, $context);
+            if(count($dataFile) > 0) {
+                $this->uploadImage($file, $fileName, $mediaId, $context);
+            }
+
+            $background = $this->getBackgroundUpload($dataCreate['imgBgData']['bgUploadKey'], $salesChannelContext);
             $result = [
                 'statusCode' => '201',
-                'message' => $this->trans('uploadSuccess')
+                'message' => $this->trans('uploadSuccess'),
+                'background' => $background
             ];
             return new JsonResponse($result);
         } catch (\Exception $exception) {
@@ -161,25 +164,6 @@ class ImageBackgroundController extends StorefrontController
             ];
         }
         return new JsonResponse($result);
-    }
-    /**
-     * @Route("/product/preview/update", name="frontend.product.preview.update", methods={"GET"}, defaults={"XmlHttpRequest"=true})
-     * @return Response
-     */
-    public function updateBackground() : Response
-    {
-        return $this->renderStorefront('@WnsArShopware/storefront/page/test-update-background-config.html.twig', []);
-    }
-
-    /**
-     * @Route("/product/preview/handle/update", name="frontend.product.preview.handle.update", defaults={"csrf_protected"=false})
-     * @param Request $request
-     * @param SalesChannelContext $salesChannelContext
-     * @return void
-     */
-    public function updateBackgroundConfig(Request $request, SalesChannelContext $salesChannelContext)
-    {
-        dd($request->request->all());
     }
 
     /**
@@ -241,24 +225,25 @@ class ImageBackgroundController extends StorefrontController
      * @param SalesChannelContext $salesChannelContext
      * @return array
      */
-    private function getImgBgData($payload, ?string $mediaId, SalesChannelContext $salesChannelContext): array
+    private function getImgBgData($payload, ?string $mediaId, $dataFile, SalesChannelContext $salesChannelContext): array
     {
         $imgBgData['bgUploadKey'] = $payload['key'] ??  Uuid::randomHex();
         $imgBgData['bgWidth'] = empty($payload['width']) ?  self::BG_WIDTH_DEAFULT : (int)$payload['width'];
         $imgBgData['topImgPosition'] = empty($payload['top']) ?  self::TOP_IMG_POSITION_DEAFULT : (int)$payload['top'];
-        $imgBgData['leftImgPosition'] = empty($payload['lelf']) ?  self::LEFT_IMG_POSITION_DEAFULT : (int)$payload['lelf'];
+        $imgBgData['leftImgPosition'] = empty($payload['left']) ?  self::LEFT_IMG_POSITION_DEAFULT : (int)$payload['left'];
 
         $context = $salesChannelContext->getContext();
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('bgUploadKey', $imgBgData['bgUploadKey']));
-
         $imgBackground = $this->imgBgUploadRepository->search($criteria, $context)->first();
 
         $backgroundId = '';
         if (!is_null($imgBackground)) {
             $mediaId = $imgBackground->mediaId;
             $backgroundId = $imgBackground->getId();
-            $this->mediaRepository->delete([['id' => $mediaId]], $context);
+            if(count($dataFile) > 0) {
+                $this->mediaRepository->delete([['id' => $mediaId]], $context);
+            }
         }
 
         $imgBgData['id'] = $backgroundId;
@@ -289,6 +274,7 @@ class ImageBackgroundController extends StorefrontController
      */
     public function uploadImage($file, $fileName, $mediaId, $context)
     {
+        $this->updateMedia($file, $fileName, $mediaId);
         return $this->mediaUpdater->persistFileToMedia(
             new MediaFile(
                 $file->getRealPath(),
@@ -307,12 +293,16 @@ class ImageBackgroundController extends StorefrontController
         );
     }
 
-    private function findMediaByFileName(string $fileName, SalesChannelContext $salesChannelContext)
+    public function updateMedia($file, $fileName, $mediaId)
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('fileName', $fileName));
-
-        return $this->mediaRepository->search($criteria, $salesChannelContext->getContext())->first();
+        $dataUpload = [
+            'id' => $mediaId,
+            'name' => 'Background' . time(),
+            'fileName' => $fileName,
+            'mimeType' => $file->getMimeType(),
+            'fileExtension' => $file->guessExtension()
+        ];
+        $this->mediaRepository->upsert([$dataUpload], Context::createDefaultContext());
     }
 
     public function validateFileUpload($file): array
@@ -331,6 +321,24 @@ class ImageBackgroundController extends StorefrontController
         return [];
     }
 
+    /**
+     * @param $uploadKey
+     * @param SalesChannelContext $salesChannelContext
+     */
+    public function getBackgroundUpload($uploadKey, SalesChannelContext $salesChannelContext)
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('bgUploadKey', $uploadKey));
+        $criteria->addAssociation('media');
+        $criteria->addAssociation('imgBgUploadSalesChannels');
+
+        return $this->imgBgUploadRepository->search($criteria, $salesChannelContext->getContext())->first();
+    }
+
+    /**
+     * @param SalesChannelContext $salesChannelContext
+     * @return mixed|null
+     */
     private function findImgBgUserUploadBySalesChannel(SalesChannelContext $salesChannelContext)
     {
         $criteria = new Criteria();
